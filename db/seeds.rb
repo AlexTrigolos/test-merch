@@ -21,7 +21,7 @@ stock_item_count = 50
 room_count = 100
 salary_office_count = 4
 user_count = 10
-merch_count = 5
+merch_count = 10
 stock_count = 4
 category_count = 6
 comment_employee_count = (employee_count / 2).floor
@@ -60,6 +60,13 @@ def stock_item_status
   end
 end
 
+category_count.create!(category_name: 'Одежда')
+category_count.create!(category_name: 'Канцелярия')
+category_count.create!(category_name: 'Посуда')
+category_count.create!(category_name: 'Сумки')
+category_count.create!(category_name: 'Аксессуары')
+category_count.create!(category_name: 'Прочее')
+
 user_count.times do
   User.create!(
     name: alphanumeric.alpha(number: rand(8..20))
@@ -73,62 +80,57 @@ stock_count.times do
   )
 end
 
-comment_employee_count.times do|index|
-  Comment.create!(
-    user_id: User.find(rand(1..user_count)),
-    body: alphanumeric.alpha(number: rand(1..1000)),
-    commentable_id: Employee.find(index * 2 - 1),
-    commentable_type: "employee"
+merch_count.times do |index|
+  Merch.create!(
+    merch_name: alphanumeric.alpha(number: rand(5..15)),
+    category_id: Category.find(rand(1..category_count))
   )
-end
 
-comment_stock_item_count.times do|index|
-  Comment.create!(
-    user_id: User.find(rand(1..user_count)),
-    body: alphanumeric.alpha(number: rand(1..1000)),
-    commentable_id: Stock_item.find(index * 2 - 1),
-    commentable_type: "stock item"
-  )
+  user_count.times do |index|
+    if Merch.last.id % 3 == index % 3
+      Merch_user.create!(
+        employee_group_id: Merch.last.id,
+        user_id: index + 1
+      )
+    end
+  end
 end
-
-comment_stock_item_action_count.times do|index|
-  Comment.create!(
-    user_id: User.find(rand(1..user_count)),
-    body: alphanumeric.alpha(number: rand(1..1000)),
-    commentable_id: Stock_item_action.find(index * 2 - 1),
-    commentable_type: "stock item action"
-  )
-end
-
-comment_employee_group_count.times do|index|
-  Comment.create!(
-    user_id: User.find(rand(1..user_count)),
-    body: alphanumeric.alpha(number: rand(1..1000)),
-    commentable_id: Employee_group.find(index * 2 - 1),
-    commentable_type: "employee group"
-  )
-end
-
-comment_merch_count.times do|index|
-  Comment.create!(
-    user_id: User.find(rand(1..user_count)),
-    body: alphanumeric.alpha(number: rand(1..1000)),
-    commentable_id: Merch.find(index * 2 - 1),
-    commentable_type: "merch"
-  )
-end
-
-category_count.create!(category_name: 'Одежда')
-category_count.create!(category_name: 'Канцелярия')
-category_count.create!(category_name: 'Посуда')
-category_count.create!(category_name: 'Сумки')
-category_count.create!(category_name: 'Аксессуары')
-category_count.create!(category_name: 'Прочее')
 
 employee_group_count.times do
   Employee_group.create!(
     group_name: company.profession,
     user_id: User.find(rand(1..user_count))
+  )
+
+  merch_count.times do |index|
+    if Employee_group.last.id % 3 == index % 3
+      Employee_group_merch.create!(
+        employee_group_id: Employee_group.last.id,
+        merch_id: index + 1
+      )
+    end
+  end
+
+  user_count.times do |index|
+    if Employee_group.last.id % 3 == index % 3
+      Employee_group_user.create!(
+        employee_group_id: Employee_group.last.id,
+        user_id: index + 1
+      )
+    end
+  end
+
+end
+
+stock_item_count.times do
+  status = stock_item_status
+  Stock_item.create!(
+    size: size,
+    sex: Faker::Gender.binary_type,
+    merch_id: Merch.find(rand(1..merch_count)),
+    stock_id: Stock.find(rand(1..stock_count)),
+    status: status,
+    quanity: status == 'in stock' ? rand(1..200) : 0
   )
 end
 
@@ -158,35 +160,71 @@ employee_count.times do
     end_date: end_date_employee
   )
 
-  rand(min_stock_item_action_count..max_stock_item_action_count).times do
-    Stock_item_action.create!(
-      given_at: rand(2) == 1 ? nil : date.between(from: start_date_employee, to: end_date_employee == nil ? Date.today : end_date_employee),
-      stock_item_id: Stock_item.find(rand(stock_item_count)),
-      employee_id: Employee.last,
-      group_id: rand(5) == 1 ? nil : Employee_Group.find(rand(employee_group_count))
-    )
+  employee_group_count.times do |index|
+    if Employee.last.id % 3 == index % 3
+      Employees_employee_group.create!(
+        employee_group_id: index + 1,
+        employee_id: Employee.last.id
+      )
+    end
   end
 
-  # rand(0..employee_group_count)
-  # Employees_employee_group.
-
+  rand(min_stock_item_action_count..max_stock_item_action_count).times do
+    now_stock_item_id = rand(stock_item_count)
+    array = []
+    Employee_group_merch.where(now_stock_item_id.merch_id).each do |elem|
+      array.push(elem.employee_group_id)
+    end
+    Stock_item_action.create!(
+      given_at: rand(2) == 1 ? nil : date.between(from: start_date_employee, to: end_date_employee == nil ? Date.today : end_date_employee),
+      stock_item_id: Stock_item.find(now_stock_item_id),
+      employee_id: Employee.last.id,
+      group_id: rand(5) == 1 ? nil : Employee_Group.find(rand(array.size))
+    )
+  end
 end
 
-merch_count.times do
-  Merch.create!(
-    merch_name: alphanumeric.alpha(number: rand(5..15)),
-    category_id: Category.find(rand(1..category_count))
+comment_employee_count.times do |index|
+  Comment.create!(
+    user_id: User.find(rand(1..user_count)),
+    body: alphanumeric.alpha(number: rand(1..1000)),
+    commentable_id: Employee.find(index * 2 - 1),
+    commentable_type: "employee"
   )
 end
 
-stock_item_count.times do
-  status = stock_item_status
-  Stock_item.create!(
-    size: size,
-    sex: Faker::Gender.binary_type,
-    merch_id: Merch.find(rand(1..merch_count)),
-    stock_id: Stock.find(rand(1..stock_count)),
-    status: status,
-    quanity: status == 'in stock' ? rand(1.. 200) : 0
+comment_stock_item_count.times do |index|
+  Comment.create!(
+    user_id: User.find(rand(1..user_count)),
+    body: alphanumeric.alpha(number: rand(1..1000)),
+    commentable_id: Stock_item.find(index * 2 - 1),
+    commentable_type: "stock item"
+  )
+end
+
+comment_stock_item_action_count.times do |index|
+  Comment.create!(
+    user_id: User.find(rand(1..user_count)),
+    body: alphanumeric.alpha(number: rand(1..1000)),
+    commentable_id: Stock_item_action.find(index * 2 - 1),
+    commentable_type: "stock item action"
+  )
+end
+
+comment_employee_group_count.times do |index|
+  Comment.create!(
+    user_id: User.find(rand(1..user_count)),
+    body: alphanumeric.alpha(number: rand(1..1000)),
+    commentable_id: Employee_group.find(index * 2 - 1),
+    commentable_type: "employee group"
+  )
+end
+
+comment_merch_count.times do |index|
+  Comment.create!(
+    user_id: User.find(rand(1..user_count)),
+    body: alphanumeric.alpha(number: rand(1..1000)),
+    commentable_id: Merch.find(index * 2 - 1),
+    commentable_type: "merch"
   )
 end
