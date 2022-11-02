@@ -6,7 +6,7 @@ class CreateStockItems < ActiveRecord::Migration[7.0]
       t.references :merch, foreign_key: true
       t.references :stock, foreign_key: true
       t.string :status
-      t.references :quantity, null: true, default: 0
+      t.integer :quantity, null: true, default: 0
       t.timestamps
     end
   end
