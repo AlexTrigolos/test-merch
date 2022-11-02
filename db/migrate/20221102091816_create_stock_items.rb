@@ -1,4 +1,4 @@
-class AddStockItems < ActiveRecord::Migration[7.0]
+class CreateStockItems < ActiveRecord::Migration[7.0]
   def change
     create_table :stock_items do |t|
       t.string :size, default: "all-sizes"

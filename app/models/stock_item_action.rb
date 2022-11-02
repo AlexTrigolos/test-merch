@@ -1,0 +1,2 @@
+class StockItemAction < ApplicationRecord
+end
