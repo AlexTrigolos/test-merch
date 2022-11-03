@@ -138,7 +138,7 @@ employee_count.times do
   Employee.create!(
     first_name: bool.boolean(true_ratio: 0.1) ? nil : name.first_name,
     last_name: bool.boolean(true_ratio: 0.1) ? nil : name.last_name,
-    user_name: name.unique.middle_name,
+    user_name: alphanumeric.unique.alpha(number: rand(8..12)),
     position: bool.boolean(true_ratio: 0.1) ? nil : "position - #{alphanumeric.alpha(number: 10)}",
     manager_id: bool.boolean(true_ratio: 0.1) ? nil : rand(1..employee_count),
     specializations: "specializations - #{alphanumeric.alpha(number: 10)}",
