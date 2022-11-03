@@ -41,33 +41,33 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_03_082641) do
 
   create_table "employee_groups_merches", force: :cascade do |t|
     t.bigint "employee_group_id", null: false
-    t.bigint "merches_id", null: false
+    t.bigint "merch_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["employee_group_id"], name: "index_employee_groups_merches_on_employee_group_id"
-    t.index ["merches_id"], name: "index_employee_groups_merches_on_merches_id"
+    t.index ["merch_id"], name: "index_employee_groups_merches_on_merch_id"
   end
 
   create_table "employees", force: :cascade do |t|
     t.string "first_name"
     t.string "last_name"
-    t.string "user_name"
+    t.string "user_name", null: false
     t.string "position"
     t.integer "manager_id"
-    t.string "specializations"
-    t.string "city_name"
+    t.string "specializations", null: false
+    t.string "city_name", null: false
     t.integer "hr_id"
-    t.integer "pr_id"
+    t.integer "pr_id", null: false
     t.string "email"
     t.string "telegram"
     t.string "room"
     t.integer "salary_office_id"
     t.string "gender"
     t.string "shirt_size"
-    t.boolean "being_dismissed"
-    t.boolean "being_hired"
-    t.boolean "is_working"
-    t.boolean "in_maternity"
+    t.boolean "being_dismissed", null: false
+    t.boolean "being_hired", null: false
+    t.boolean "is_working", null: false
+    t.boolean "in_maternity", null: false
     t.datetime "start_date"
     t.datetime "end_date"
     t.datetime "created_at", null: false
@@ -149,7 +149,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_03_082641) do
   add_foreign_key "comments", "users"
   add_foreign_key "employee_groups", "users"
   add_foreign_key "employee_groups_merches", "employee_groups"
-  add_foreign_key "employee_groups_merches", "merches", column: "merches_id"
+  add_foreign_key "employee_groups_merches", "merches"
   add_foreign_key "employees_employee_groups", "employee_groups"
   add_foreign_key "employees_employee_groups", "employees"
   add_foreign_key "merches", "categories"
