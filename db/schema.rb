@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_02_154136) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_03_082641) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -39,12 +39,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_02_154136) do
     t.index ["user_id"], name: "index_employee_groups_on_user_id"
   end
 
-  create_table "employee_groups_merches", id: false, force: :cascade do |t|
+  create_table "employee_groups_merches", force: :cascade do |t|
     t.bigint "employee_group_id", null: false
-    t.bigint "merch_id", null: false
+    t.bigint "merches_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["employee_group_id", "merch_id"], name: "index_employee_groups_merches_on_employee_group_id_and_merch_id"
+    t.index ["employee_group_id"], name: "index_employee_groups_merches_on_employee_group_id"
+    t.index ["merches_id"], name: "index_employee_groups_merches_on_merches_id"
   end
 
   create_table "employees", force: :cascade do |t|
@@ -74,8 +75,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_02_154136) do
   end
 
   create_table "employees_employee_groups", id: false, force: :cascade do |t|
-    t.bigint "employee_id"
-    t.bigint "employee_group_id"
+    t.bigint "employee_id", null: false
+    t.bigint "employee_group_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["employee_group_id"], name: "index_employees_employee_groups_on_employee_group_id"
@@ -147,6 +148,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_02_154136) do
 
   add_foreign_key "comments", "users"
   add_foreign_key "employee_groups", "users"
+  add_foreign_key "employee_groups_merches", "employee_groups"
+  add_foreign_key "employee_groups_merches", "merches", column: "merches_id"
   add_foreign_key "employees_employee_groups", "employee_groups"
   add_foreign_key "employees_employee_groups", "employees"
   add_foreign_key "merches", "categories"
