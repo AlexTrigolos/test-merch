@@ -74,7 +74,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_03_082641) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "employees_employee_groups", id: false, force: :cascade do |t|
+  create_table "employees_employee_groups", force: :cascade do |t|
     t.bigint "employee_id", null: false
     t.bigint "employee_group_id", null: false
     t.datetime "created_at", null: false
@@ -101,7 +101,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_03_082641) do
 
   create_table "merches", force: :cascade do |t|
     t.string "merch_name"
-    t.bigint "category_id"
+    t.bigint "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_merches_on_category_id"

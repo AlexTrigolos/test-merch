@@ -23,12 +23,6 @@ salary_office_count = 4
 user_count = 10
 merch_count = 10
 stock_count = 4
-category_count = 6
-# comment_employee_count = (employee_count / 2).floor
-# comment_stock_item_action_count = (min_stock_item_action_count * employee_count / 2).floor
-# comment_stock_item_count = (stock_item_count / 2).floor
-# comment_employee_group_count = (employee_group_count / 2).floor
-# comment_merch_count = (merch_count / 2).floor
 
 def size
   case rand(6)
@@ -58,6 +52,11 @@ def stock_item_status
   end
 end
 
+def employee_stock_item_action_date(employee)
+  Faker::Date.between(from: employee.start_date.nil? ? Date.today : employee.start_date,
+                      to: employee.end_date.nil? ? Date.today : employee.end_date)
+end
+
 Category.create!(category_name: 'Одежда')
 Category.create!(category_name: 'Канцтовары')
 Category.create!(category_name: 'Посуда')
@@ -85,7 +84,7 @@ merch_count.times do
   )
 
   user_count.times do |index|
-    if Merch.last.id % 3 == index % 3
+    if bool.boolean(true_ratio: 0.3333)
       FavouriteMerch.create!(
         merch_id: Merch.last.id,
         user_id: index + 1
@@ -97,11 +96,11 @@ end
 employee_group_count.times do
   EmployeeGroup.create!(
     group_name: company.unique.profession,
-    user_id: User.find(rand(1..user_count)).id
+    user_id: bool.boolean(true_ratio: 0.2) ? nil : rand(1..user_count)
   )
 
   merch_count.times do |index|
-    if EmployeeGroup.last.id % 3 == index % 3
+    if bool.boolean(true_ratio: 0.3333)
       EmployeeGroupsMerch.create!(
         employee_group_id: EmployeeGroup.last.id,
         merch_id: index + 1
@@ -110,7 +109,7 @@ employee_group_count.times do
   end
 
   user_count.times do |index|
-    if EmployeeGroup.last.id % 3 == index % 3
+    if bool.boolean(true_ratio: 0.3333)
       FavouriteEmployeeGroup.create!(
         employee_group_id: EmployeeGroup.last.id,
         user_id: index + 1
@@ -122,46 +121,46 @@ end
 
 stock_item_count.times do
   status = stock_item_status
+  merch = Merch.find(rand(1..merch_count))
   StockItem.create!(
-    size: size,
-    sex: Faker::Gender.binary_type,
-    merch_id: Merch.find(rand(1..merch_count)).id,
+    size: Category.find(merch.category_id).category_name == 'Одежда' ? size : 'all-sizes',
+    sex: Category.find(merch.category_id).category_name == 'Одежда' ? Faker::Gender.binary_type : 'all-sexes',
+    merch_id: merch.id,
     stock_id: Stock.find(rand(1..stock_count)).id,
     status: status,
     quantity: status == 'in stock' ? rand(1..200) : 0
   )
 end
 
-employee_count.times do |index|
-  p index if index % 10 == 0
+employee_count.times do
   start_date_employee = date.between(from: '2014-09-23', to: Date.today)
-  end_date_employee = rand(3) == 1 ? nil : date.between(from: start_date_employee.to_s, to: Date.today)
+  end_date_employee = date.between(from: start_date_employee.to_s, to: Date.today)
   Employee.create!(
-    first_name: name.first_name,
-    last_name: name.last_name,
-    user_name: name.middle_name,
-    position: "position - #{alphanumeric.alpha(number: 10)}",
-    manager_id: rand(1..employee_count),
+    first_name: bool.boolean(true_ratio: 0.1) ? nil : name.first_name,
+    last_name: bool.boolean(true_ratio: 0.1) ? nil : name.last_name,
+    user_name: name.unique.middle_name,
+    position: bool.boolean(true_ratio: 0.1) ? nil : "position - #{alphanumeric.alpha(number: 10)}",
+    manager_id: bool.boolean(true_ratio: 0.1) ? nil : rand(1..employee_count),
     specializations: "specializations - #{alphanumeric.alpha(number: 10)}",
     city_name: "city_name - #{alphanumeric.alpha(number: 10)}",
-    hr_id: rand(1..employee_count),
+    hr_id: bool.boolean(true_ratio: 0.1) ? nil : rand(1..employee_count),
     pr_id: rand(1..employee_count),
-    email: email.email,
-    telegram: "tg - @#{alphanumeric.alpha(number: 10)}",
-    room: rand(1..room_count),
-    salary_office_id: rand(1..salary_office_count),
-    gender: Faker::Gender.binary_type,
-    shirt_size: size,
+    email: bool.boolean(true_ratio: 0.1) ? nil : email.email,
+    telegram: bool.boolean(true_ratio: 0.1) ? nil : "tg - @#{alphanumeric.alpha(number: 10)}",
+    room: bool.boolean(true_ratio: 0.1) ? nil : rand(1..room_count),
+    salary_office_id: bool.boolean(true_ratio: 0.1) ? nil : rand(1..salary_office_count),
+    gender: bool.boolean(true_ratio: 0.1) ? nil : Faker::Gender.binary_type,
+    shirt_size: bool.boolean(true_ratio: 0.1) ? nil : size,
     being_dismissed: bool.boolean,
     being_hired: bool.boolean,
     is_working: bool.boolean,
     in_maternity: bool.boolean,
-    start_date: start_date_employee,
-    end_date: end_date_employee
+    start_date: bool.boolean(true_ratio: 0.1) ? nil : start_date_employee,
+    end_date: bool.boolean(true_ratio: 0.1) ? nil : end_date_employee
   )
 
   employee_group_count.times do |elem|
-    if Employee.last.id % 3 == elem % 3
+    if bool.boolean(true_ratio: 0.3333)
       EmployeesEmployeeGroup.create!(
         employee_group_id: elem + 1,
         employee_id: Employee.last.id
@@ -177,10 +176,10 @@ employee_count.times do |index|
     end
 
     StockItemAction.create!(
-      given_at: bool.boolean ? nil : date.between(from: start_date_employee.to_s, to: end_date_employee == nil ? Date.today : end_date_employee.to_s),
+      given_at: bool.boolean(true_ratio: 0.2) ? nil : employee_stock_item_action_date(Employee.last),
       stock_item_id: StockItem.find(now_stock_item_id).id,
       employee_id: Employee.last.id,
-      employee_group_id: array.sample
+      employee_group_id: bool.boolean(true_ratio: 0.1) ? nil : array.sample
     )
 
     if bool.boolean
