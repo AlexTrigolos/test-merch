@@ -13,6 +13,7 @@ email = Faker::Internet
 date = Faker::Date
 company = Faker::Company
 alphanumeric = Faker::Alphanumeric
+bool = Faker::Boolean
 employee_count = 600
 min_stock_item_action_count = 8
 max_stock_item_action_count = 12
@@ -31,8 +32,7 @@ comment_employee_group_count = (employee_group_count / 2).floor
 comment_merch_count = (merch_count / 2).floor
 
 def size
-  rand_size = rand(6)
-  case rand_size
+  case rand(6)
   when 0
     's'
   when 1
@@ -49,8 +49,7 @@ def size
 end
 
 def stock_item_status
-  rand_status = rand(3)
-  case rand_status
+  case rand(3)
   when 0
     'in stock'
   when 1
@@ -141,6 +140,7 @@ employee_count.times do
   Employee.create!(
     first_name: name.first_name,
     last_name: name.last_name,
+    user_name: name.middle_name,
     position: "position - #{string.random(length: 5..10)}",
     manager_id: rand(1..employee_count),
     specializations: "specializations - #{string.random(length: 5..10)}",
@@ -153,10 +153,10 @@ employee_count.times do
     salary_office_id: rand(1..salary_office_count),
     gender: Faker::Gender.binary_type,
     shirt_size: size,
-    being_dismissed: rand(2) == 1,
-    being_hired: rand(2) == 1,
-    is_working: rand(2) == 1,
-    in_maternity: rand(2) == 1,
+    being_dismissed: bool.boolean,
+    being_hired: bool.boolean,
+    is_working: bool.boolean,
+    in_maternity: bool.boolean,
     start_date: start_date_employee,
     end_date: end_date_employee
   )
@@ -179,10 +179,10 @@ employee_count.times do
     end
 
     StockItemAction.create!(
-      given_at: rand(2) == 1 ? nil : date.between(from: start_date_employee.to_s, to: end_date_employee == nil ? Date.today : end_date_employee.to_s),
+      given_at: bool.boolean ? nil : date.between(from: start_date_employee.to_s, to: end_date_employee == nil ? Date.today : end_date_employee.to_s),
       stock_item_id: StockItem.find(now_stock_item_id).id,
       employee_id: Employee.last.id,
-      employee_group_id: array[rand(array.size)]
+      employee_group_id: array.sample
     )
   end
 end
