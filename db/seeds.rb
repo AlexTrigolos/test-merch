@@ -58,12 +58,12 @@ def stock_item_status
   end
 end
 
-Category.create!(category_name: 'clothewrs')
-Category.create!(category_name: 'katstovari')
-Category.create!(category_name: 'posuda')
-Category.create!(category_name: 'sumki')
-Category.create!(category_name: 'aksessuari')
-Category.create!(category_name: 'other')
+Category.create!(category_name: 'Одежда')
+Category.create!(category_name: 'Канцтовары')
+Category.create!(category_name: 'Посуда')
+Category.create!(category_name: 'Сумки')
+Category.create!(category_name: 'Аксессуары')
+Category.create!(category_name: 'Прочее')
 
 user_count.times do
   User.create!(
@@ -73,15 +73,15 @@ end
 
 stock_count.times do
   Stock.create!(
-    stock_name: alphanumeric.alpha(number: rand(8..20)),
+    stock_name: alphanumeric.unique.alpha(number: rand(8..20)),
     user_id: User.find(rand(1..user_count)).id
   )
 end
 
 merch_count.times do
   Merch.create!(
-    merch_name: alphanumeric.alpha(number: rand(5..15)),
-    category_id: Category.find(rand(1..category_count)).id
+    merch_name: alphanumeric.unique.alpha(number: rand(5..15)),
+    category_id: Category.find(rand(1..Category.all.count)).id
   )
 
   user_count.times do |index|
@@ -96,7 +96,7 @@ end
 
 employee_group_count.times do
   EmployeeGroup.create!(
-    group_name: company.profession,
+    group_name: company.unique.profession,
     user_id: User.find(rand(1..user_count)).id
   )
 

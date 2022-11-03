@@ -15,16 +15,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_03_082641) do
   enable_extension "plpgsql"
 
   create_table "categories", force: :cascade do |t|
-    t.string "category_name"
+    t.string "category_name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "comments", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.text "body"
-    t.string "commentable_type"
-    t.bigint "commentable_id"
+    t.text "body", null: false
+    t.string "commentable_type", null: false
+    t.bigint "commentable_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
@@ -32,7 +32,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_03_082641) do
   end
 
   create_table "employee_groups", force: :cascade do |t|
-    t.string "group_name"
+    t.string "group_name", null: false
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -84,16 +84,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_03_082641) do
   end
 
   create_table "favourite_employee_groups", force: :cascade do |t|
-    t.integer "employee_group_id"
-    t.integer "user_id"
+    t.integer "employee_group_id", null: false
+    t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id", "employee_group_id"], name: "index_favourite_employee_group"
   end
 
   create_table "favourite_merches", force: :cascade do |t|
-    t.integer "merch_id"
-    t.integer "user_id"
+    t.integer "merch_id", null: false
+    t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id", "merch_id"], name: "index_favourite_merches"
@@ -109,8 +109,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_03_082641) do
 
   create_table "stock_item_actions", force: :cascade do |t|
     t.datetime "given_at"
-    t.bigint "stock_item_id"
-    t.bigint "employee_id"
+    t.bigint "stock_item_id", null: false
+    t.bigint "employee_id", null: false
     t.bigint "employee_group_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -122,10 +122,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_03_082641) do
   create_table "stock_items", force: :cascade do |t|
     t.string "size", default: "all-sizes"
     t.string "sex", default: "all-sexes"
-    t.bigint "merch_id"
-    t.bigint "stock_id"
-    t.string "status"
-    t.integer "quantity", default: 0
+    t.bigint "merch_id", null: false
+    t.bigint "stock_id", null: false
+    t.string "status", null: false
+    t.integer "quantity", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["merch_id"], name: "index_stock_items_on_merch_id"
@@ -133,8 +133,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_03_082641) do
   end
 
   create_table "stocks", force: :cascade do |t|
-    t.string "stock_name"
-    t.bigint "user_id"
+    t.string "stock_name", null: false
+    t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_stocks_on_user_id"
