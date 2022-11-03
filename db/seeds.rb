@@ -13,16 +13,16 @@ date = Faker::Date
 company = Faker::Company
 alphanumeric = Faker::Alphanumeric
 bool = Faker::Boolean
-employee_count = 100
+employee_count = 600
 min_stock_item_action_count = 8
 max_stock_item_action_count = 12
-employee_group_count = 11
-stock_item_count = 50
-room_count = 100
-salary_office_count = 4
+employee_group_count = 21
+stock_item_count = 150
+room_count = 200
+salary_office_count = 7
 user_count = 10
-merch_count = 10
-stock_count = 4
+merch_count = 20
+stock_count = 7
 
 def size
   case rand(6)
